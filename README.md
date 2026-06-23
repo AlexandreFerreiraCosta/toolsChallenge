@@ -44,3 +44,13 @@ As variáveis podem ser configurada no seu OS ou direto na IDE utilizada.
 Agora basta subir a aplicação na IDE utilizada.
 
 ## A aplicação será executada na porta 8080.
+
+## Para acessa a documentação da API basta acessar a seguinte URL.
+    $ http://localhost:5000/swagger-ui/index.html#/
+
+## A aplicação trabalha com internacionalização i18n. Segue exemplo de requisição.
+
+linguagens aceitas :
+* **padrão** - Português (src/main/resources/messages.properties)
+
+  $ http://localhost:8080
