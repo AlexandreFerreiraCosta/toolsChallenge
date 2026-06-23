@@ -73,6 +73,11 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-flyway</artifactId>
+		</dependency>
+
+		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
@@ -120,7 +125,6 @@
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
-
 
 			<plugin>
 				<groupId>com.diffplug.spotless</groupId>
