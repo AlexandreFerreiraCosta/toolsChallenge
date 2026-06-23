@@ -12,7 +12,8 @@ public class SwaggerConfig {
     public OpenAPI openAPI() {
         return new OpenAPI()
                 .info(new Info().title("Tools Java Challenge")
-                        .description("O projeto tem como intuito disponibilizar os endpoints de acesso às funcionalidades do Tools Java Challenge.")
+                        .description(
+                                "O projeto tem como intuito disponibilizar os endpoints de acesso às funcionalidades do Tools Java Challenge.")
                         .version("1"));
     }
 }
