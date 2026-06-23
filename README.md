@@ -1,0 +1,46 @@
+# API DO TOOLS JAVA CHALLENGE👋
+
+O projeto tem como intuito disponibilizar os endpoints de acesso às funcionalidades do Tools Java Challenge.
+
+Nas próximas seções serão apresentados os requisitos e o procedimento para realizar o setup da aplicação.
+
+## Requisitos
+Para montar o ambiente do projeto é necessário:
+* Docker
+* Docker Compose
+* Java 21
+* Maven
+
+## Configuração do Back-End
+
+O projeto trabalha com o gerenciado de dependências 'Maven'.
+
+Depois da instalação das dependências é necessário subir o container docker.
+
+Navegue até a pasta **containers** e execute o seguinte comando. Obs: e necessário ter o docker configurado corretamente.
+    
+    $ docker compose -f docker-compose-postgres.yaml  up -d --build
+
+O comando acima irá iniciar um container na porta 5432. Para acessar o banco de dados, basta utilizar as seguintes credências:
+
+    $ url: localhost
+    $ port: 5432
+    $ usuário: postgres
+    $ senha: postgres
+    $ banco: api-tools-challenge
+
+Os demais detalhes de configurações fica a critério de cada IDE utilizada.
+
+Para subir a aplicação precisamos configurar as seguintes variáveis:
+
+As variáveis podem ser configurada no seu OS ou direto na IDE utilizada.
+
+* DATABASE_HOST=localhost
+* DATABASE_PORT=5432
+* DATABASE_USERNAME=postgres
+* DATABASE_PASSWORD=postgres
+* DATABASE_NAME=api-tools-challenge
+
+Agora basta subir a aplicação na IDE utilizada.
+
+## A aplicação será executada na porta 8080.
