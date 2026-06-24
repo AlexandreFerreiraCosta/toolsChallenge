@@ -23,7 +23,7 @@ public class TransactionServiceImpl implements ITransactionService {
 
     @Override
     public TransactionDto createTransaction(TransactionCreateDto transactionCreateDto) {
-        validateTransactionId(transactionCreateDto.getTransactionId());
+        validateTransactionId(transactionCreateDto.transactionId());
 
         Transaction transaction = transactionRepository
                 .save(transactionMapper.convertTransactionCreateDtoToTransaction(transactionCreateDto));
