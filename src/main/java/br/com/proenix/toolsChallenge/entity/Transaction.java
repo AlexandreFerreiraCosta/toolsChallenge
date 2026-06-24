@@ -26,6 +26,9 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(name = "transaction_id", nullable = false)
+    private String transactionId;
+
     @Column(name = "card", nullable = false)
     private String card;
 
