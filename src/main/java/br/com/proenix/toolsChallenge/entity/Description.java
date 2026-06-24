@@ -27,7 +27,7 @@ public class Description {
     private String nsu;
 
     @Column(name = "authorization_code")
-    private String authorization_code;
+    private String authorizationCode;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)

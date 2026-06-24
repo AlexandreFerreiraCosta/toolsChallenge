@@ -7,6 +7,8 @@ import br.com.proenix.toolsChallenge.exception.FailureBadRequestException;
 import br.com.proenix.toolsChallenge.mapper.TransactionMapper;
 import br.com.proenix.toolsChallenge.repository.TransactionRepository;
 import br.com.proenix.toolsChallenge.service.interfaces.ITransactionService;
+import br.com.proenix.toolsChallenge.service.interfaces.ITransactionValidatorService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -21,14 +23,16 @@ public class TransactionServiceImpl implements ITransactionService {
     private final TransactionRepository transactionRepository;
     private final MessageSource messageSource;
 
+    private final List<ITransactionValidatorService> validatorServiceList;
+
     @Override
     public TransactionDto createTransaction(TransactionCreateDto transactionCreateDto) {
+        Transaction transaction = transactionMapper.convertTransactionCreateDtoToTransaction(transactionCreateDto);
+
         validateTransactionId(transactionCreateDto.transactionId());
+        validatorServiceList.forEach(validatorService -> validatorService.validator(transaction));
 
-        Transaction transaction = transactionRepository
-                .save(transactionMapper.convertTransactionCreateDtoToTransaction(transactionCreateDto));
-
-        return transactionMapper.convertTransactionToTransactionDto(transaction);
+        return transactionMapper.convertTransactionToTransactionDto(transactionRepository.save(transaction));
     }
 
     private void validateTransactionId(String transactionId) {
