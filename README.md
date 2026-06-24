@@ -46,7 +46,7 @@ Agora basta subir a aplicação na IDE utilizada.
 ## A aplicação será executada na porta 8080.
 
 ## Para acessa a documentação da API basta acessar a seguinte URL.
-    $ http://localhost:5000/swagger-ui/index.html#/
+    $ http://localhost:8080/swagger-ui/index.html#/
 
 ## A aplicação trabalha com internacionalização i18n. Segue exemplo de requisição.
 
