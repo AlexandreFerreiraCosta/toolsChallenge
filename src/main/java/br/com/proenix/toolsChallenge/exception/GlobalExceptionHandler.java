@@ -72,11 +72,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidFormatException.class)
     public ResponseEntity<ApiErrorResponse> invalidFormatException(InvalidFormatException invalidFormatException,
             HttpServletRequest request) {
-        // String fieldName = invalidFormatException.getPath().stream()
-        // .map(JacksonException.Reference::getPropertyName)
-        // .findFirst()
-        // .orElse(FIELD);
-
         String pathCompleto = invalidFormatException.getPath().stream()
                 .map(JacksonException.Reference::getPropertyName)
                 .filter(Objects::nonNull)
