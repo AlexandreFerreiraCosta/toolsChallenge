@@ -1,4 +1,4 @@
-package br.com.proenix.toolsChallenge.service;
+package br.com.proenix.toolsChallenge.unit.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -17,6 +17,7 @@ import br.com.proenix.toolsChallenge.enums.ETransactionStatus;
 import br.com.proenix.toolsChallenge.exception.FailureBadRequestException;
 import br.com.proenix.toolsChallenge.mapper.TransactionMapper;
 import br.com.proenix.toolsChallenge.repository.TransactionRepository;
+import br.com.proenix.toolsChallenge.service.TransactionServiceImpl;
 import br.com.proenix.toolsChallenge.service.interfaces.ITransactionValidatorService;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

@@ -1,7 +1,8 @@
-package br.com.proenix.toolsChallenge.util.validator;
+package br.com.proenix.toolsChallenge.unit.util.validator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import br.com.proenix.toolsChallenge.util.validator.EPaymentTypeValidator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

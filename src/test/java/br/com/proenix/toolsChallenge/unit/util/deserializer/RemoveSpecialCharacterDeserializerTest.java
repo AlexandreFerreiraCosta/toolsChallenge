@@ -1,8 +1,9 @@
-package br.com.proenix.toolsChallenge.util.deserializer;
+package br.com.proenix.toolsChallenge.unit.util.deserializer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
+import br.com.proenix.toolsChallenge.util.deserializer.RemoveSpecialCharacterDeserializer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,7 +13,7 @@ import tools.jackson.core.JsonParser;
 
 @ExtendWith(MockitoExtension.class)
 class RemoveSpecialCharacterDeserializerTest {
-    private final RemoveSpecialCharacterDeserializer deserializer = new RemoveSpecialCharacterDeserializer();;
+    private final RemoveSpecialCharacterDeserializer deserializer = new RemoveSpecialCharacterDeserializer();
 
     @Mock
     private JsonParser jsonParser;

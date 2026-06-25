@@ -1,4 +1,4 @@
-package br.com.proenix.toolsChallenge.exception;
+package br.com.proenix.toolsChallenge.unit.exception;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -6,6 +6,9 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import br.com.proenix.toolsChallenge.exception.ApiErrorResponse;
+import br.com.proenix.toolsChallenge.exception.FailureBadRequestException;
+import br.com.proenix.toolsChallenge.exception.GlobalExceptionHandler;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.time.LocalDateTime;
