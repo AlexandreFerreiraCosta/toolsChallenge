@@ -8,7 +8,7 @@ Nas próximas seções serão apresentados os requisitos e o procedimento para r
 Para montar o ambiente do projeto é necessário:
 * Docker
 * Docker Compose
-* Java 21
+* Java 26
 * Maven
 
 ## Configuração do Back-End

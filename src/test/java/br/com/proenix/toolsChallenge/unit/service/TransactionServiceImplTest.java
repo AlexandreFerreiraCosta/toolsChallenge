@@ -1,5 +1,11 @@
 package br.com.proenix.toolsChallenge.unit.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+
 import br.com.proenix.toolsChallenge.dto.general.PageDto;
 import br.com.proenix.toolsChallenge.dto.transaction.DescriptionCreateDto;
 import br.com.proenix.toolsChallenge.dto.transaction.DescriptionDto;
@@ -16,6 +22,11 @@ import br.com.proenix.toolsChallenge.mapper.TransactionMapper;
 import br.com.proenix.toolsChallenge.repository.TransactionRepository;
 import br.com.proenix.toolsChallenge.service.TransactionServiceImpl;
 import br.com.proenix.toolsChallenge.service.interfaces.ITransactionValidatorService;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,18 +39,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class TransactionServiceImplTest {
@@ -291,7 +290,7 @@ class TransactionServiceImplTest {
     @DisplayName("should return paginated transactions with filter")
     void shouldReturnPaginatedTransactionsWithFilter() {
         TransactionFilterDto filterDto = new TransactionFilterDto("TXN-001", null, null, null, null);
-        Pageable pageable = PageRequest.of(0, 10);
+        Pageable pageable = PageRequest.of(0,10);
 
         Transaction transaction = new Transaction();
         transaction.setTransactionId("TXN-001");
@@ -314,10 +313,10 @@ class TransactionServiceImplTest {
         expectedPageDto.setTotalPages(1);
         expectedPageDto.setLast(true);
 
-        when(transactionRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(transactionPage);
+        when(transactionRepository.findAll(any(Specification.class),any(Pageable.class))).thenReturn(transactionPage);
         when(transactionMapper.convertPageTransactionToPageTransactionDto(transactionPage)).thenReturn(expectedPageDto);
 
-        PageDto<TransactionDto> result = transactionService.searchTransactions(filterDto, pageable);
+        PageDto<TransactionDto> result = transactionService.searchTransactions(filterDto,pageable);
 
         assertThat(result).isNotNull();
         assertThat(result.getContent()).hasSize(1);
@@ -329,7 +328,7 @@ class TransactionServiceImplTest {
     @DisplayName("should return empty page when no transactions match filter")
     void shouldReturnEmptyPageWhenNoTransactionsMatchFilter() {
         TransactionFilterDto filterDto = new TransactionFilterDto(null, null, "Loja Inexistente", null, null);
-        Pageable pageable = PageRequest.of(0, 10);
+        Pageable pageable = PageRequest.of(0,10);
 
         Page<Transaction> emptyPage = new PageImpl<>(List.of(), pageable, 0);
 
@@ -339,10 +338,10 @@ class TransactionServiceImplTest {
         expectedPageDto.setTotalPages(0);
         expectedPageDto.setLast(true);
 
-        when(transactionRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(emptyPage);
+        when(transactionRepository.findAll(any(Specification.class),any(Pageable.class))).thenReturn(emptyPage);
         when(transactionMapper.convertPageTransactionToPageTransactionDto(emptyPage)).thenReturn(expectedPageDto);
 
-        PageDto<TransactionDto> result = transactionService.searchTransactions(filterDto, pageable);
+        PageDto<TransactionDto> result = transactionService.searchTransactions(filterDto,pageable);
 
         assertThat(result).isNotNull();
         assertThat(result.getContent()).isEmpty();
