@@ -311,7 +311,7 @@ public class TransactionControllerTest extends BaseIntegrationTest {
                 .statusCode(400);
     }
 
-    @Sql({"/seeds/init.sql", "/seeds/insert_transaction.sql"})
+    @Sql({"/seeds/init.sql","/seeds/insert_transaction.sql"})
     @Test
     @DisplayName("Should return paginated transactions without filters")
     void shouldReturnPaginatedTransactionsWithoutFilters() {
@@ -319,45 +319,69 @@ public class TransactionControllerTest extends BaseIntegrationTest {
                 .when().get("/api/v1/transaction")
                 .then()
                 .statusCode(200)
-                .body("totalElements", equalTo(3))
-                .body("content[0].transactionId", notNullValue());
+                .body("totalElements",equalTo(3))
+                .body("content[0].transactionId",notNullValue());
     }
 
-    @Sql({"/seeds/init.sql", "/seeds/insert_transaction.sql"})
+    @Sql({"/seeds/init.sql","/seeds/insert_transaction.sql"})
     @Test
     @DisplayName("Should return transactions filtered by transactionId")
     void shouldReturnTransactionsFilteredByTransactionId() {
         given()
-                .queryParam("transactionId", "102030405062")
+                .queryParam("transactionId","102030405062")
                 .when().get("/api/v1/transaction")
                 .then()
                 .statusCode(200)
-                .body("totalElements", equalTo(1))
-                .body("content[0].transactionId", equalTo("102030405062"));
+                .body("totalElements",equalTo(1))
+                .body("content[0].transactionId",equalTo("102030405062"));
     }
 
-    @Sql({"/seeds/init.sql", "/seeds/insert_transaction.sql"})
+    @Sql({"/seeds/init.sql","/seeds/insert_transaction.sql"})
     @Test
     @DisplayName("Should return transactions filtered by status")
     void shouldReturnTransactionsFilteredByStatus() {
         given()
-                .queryParam("transactionStatus", "AUTHORIZED")
+                .queryParam("transactionStatus","AUTHORIZED")
                 .when().get("/api/v1/transaction")
                 .then()
                 .statusCode(200)
-                .body("totalElements", equalTo(1))
-                .body("content[0].description.transactionStatus", equalTo("AUTHORIZED"));
+                .body("totalElements",equalTo(1))
+                .body("content[0].description.transactionStatus",equalTo("AUTHORIZED"));
     }
 
-    @Sql({"/seeds/init.sql", "/seeds/insert_transaction.sql"})
+    @Sql({"/seeds/init.sql","/seeds/insert_transaction.sql"})
     @Test
     @DisplayName("Should return empty page when no transactions match filter")
     void shouldReturnEmptyPageWhenNoTransactionsMatchFilter() {
         given()
-                .queryParam("transactionId", "NON-EXISTENT")
+                .queryParam("transactionId","NON-EXISTENT")
                 .when().get("/api/v1/transaction")
                 .then()
                 .statusCode(200)
-                .body("totalElements", equalTo(0));
+                .body("totalElements",equalTo(0));
+    }
+
+    @Sql({"/seeds/init.sql","/seeds/insert_transaction.sql"})
+    @Test
+    @DisplayName("Should return a transaction by id")
+    void shouldReturnTransactionById() {
+        given()
+                .when().get("/api/v1/transaction/102030405067")
+                .then()
+                .statusCode(200)
+                .body("transactionId",equalTo("102030405067"))
+                .body("card",equalTo("5353276659629461"))
+                .body("description.transactionStatus",equalTo("REVERSED"))
+                .body("description.nsu",equalTo("554016765882"))
+                .body("description.authorizationCode",equalTo("YRZ19JIDB"));
+    }
+
+    @Test
+    @DisplayName("Should return 400 when transaction not found")
+    void shouldReturn400WhenTransactionByIdNotFound() {
+        given()
+                .when().get("/api/v1/transaction/NON-EXISTENT")
+                .then()
+                .statusCode(400);
     }
 }
