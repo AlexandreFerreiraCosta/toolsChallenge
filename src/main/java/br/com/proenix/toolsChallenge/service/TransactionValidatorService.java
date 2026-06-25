@@ -13,7 +13,7 @@ public class TransactionValidatorService implements ITransactionValidatorService
 
     @Override
     public void validator(Transaction transaction) {
-        if (isLimit(transaction.getDescription().getValue())) {
+        if (transaction.getDescription().getValue().compareTo(LIMIT) >= 0) {
             transaction.getDescription().setTransactionStatus(ETransactionStatus.DENIED);
             return;
         }
@@ -21,10 +21,6 @@ public class TransactionValidatorService implements ITransactionValidatorService
         transaction.getDescription().setNsu(generateNsu());
         transaction.getDescription().setAuthorizationCode(generateAuthorizationCode());
         transaction.getDescription().setTransactionStatus(ETransactionStatus.AUTHORIZED);
-    }
-
-    private boolean isLimit(BigDecimal valueTransaction) {
-        return valueTransaction != null && valueTransaction.compareTo(LIMIT) >= 0;
     }
 
     private String generateNsu() {
