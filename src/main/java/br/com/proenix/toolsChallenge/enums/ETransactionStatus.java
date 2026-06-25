@@ -7,7 +7,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ETransactionStatus {
     AUTHORIZED("Autorizado"),
-    DENIED("Negado");
+    DENIED("Negado"),
+    REVERSED("Estornado");
 
     private final String description;
 }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.exc.InvalidFormatException;
 
@@ -25,6 +26,7 @@ public class GlobalExceptionHandler {
     private static final String VALIDATION_ERROR_SUBMITTED = "validation-error-submitted";
     private static final String FIELD_RECEIVED_THE_VALUE = "field-received-the-value";
     private static final String FIELD = "field";
+    private static final String REQUESTED_PATH_WAS_NOT_FOUND_ON_THE_SERVER = "requested-path-was-not-found-on-the-server";
 
     private final MessageSource messageSource;
 
@@ -38,6 +40,20 @@ public class GlobalExceptionHandler {
         apiErrorResponse.setError(HttpStatus.BAD_REQUEST.getReasonPhrase());
         apiErrorResponse.setMessage(failureBadRequestException.getMessage());
         apiErrorResponse.setPath(request.getRequestURI());
+
+        return new ResponseEntity<>(apiErrorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<ApiErrorResponse> noResourceFoundException(NoResourceFoundException noResourceFoundException) {
+        ApiErrorResponse apiErrorResponse = new ApiErrorResponse();
+        apiErrorResponse.setDateError(LocalDateTime.now());
+        apiErrorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+        apiErrorResponse.setError(HttpStatus.BAD_REQUEST.getReasonPhrase());
+        apiErrorResponse
+                .setMessage((messageSource.getMessage(REQUESTED_PATH_WAS_NOT_FOUND_ON_THE_SERVER,null,LocaleContextHolder.getLocale())));
+        apiErrorResponse.setPath(noResourceFoundException.getResourcePath());
 
         return new ResponseEntity<>(apiErrorResponse, HttpStatus.BAD_REQUEST);
     }

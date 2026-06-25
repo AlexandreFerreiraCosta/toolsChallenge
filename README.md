@@ -57,3 +57,5 @@ linguagens aceitas :
 
 ## Arquitetura Futura e Escalabilidade
 Como o critério de autorização não foi mapeado no enunciado, foi implementada uma regra de negócio onde transações com valor igual ou superior a R$ 1.000,00 são automaticamente salvas com o status 'NEGADO', e valores inferiores são 'AUTORIZADO'.
+
+A critério de aprendizado foi criado um novo status 'REVERSED' que será utilizado validar o fluxo de estorno da transação.
