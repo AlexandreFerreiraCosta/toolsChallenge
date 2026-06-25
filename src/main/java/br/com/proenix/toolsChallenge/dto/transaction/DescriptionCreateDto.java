@@ -2,6 +2,7 @@ package br.com.proenix.toolsChallenge.dto.transaction;
 
 import br.com.proenix.toolsChallenge.util.deserializer.MoneyDeserializer;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -15,6 +16,7 @@ public record DescriptionCreateDto(
         @Positive(message = "{positive}") BigDecimal value,
 
         @NotNull(message = "{not-null}")
+        @FutureOrPresent(message = "{date-must-from-today}")
         @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss") LocalDateTime date,
 
         @NotBlank(message = "{not-blank}") String establishment) {
