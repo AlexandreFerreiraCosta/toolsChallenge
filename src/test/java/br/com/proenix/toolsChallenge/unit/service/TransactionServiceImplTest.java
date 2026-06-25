@@ -25,7 +25,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -65,7 +64,6 @@ class TransactionServiceImplTest {
         transaction.setCard(createDto.card());
 
         TransactionDto expectedDto = new TransactionDto(
-                UUID.randomUUID(),
                 createDto.transactionId(),
                 createDto.card(),
                 new DescriptionDto(BigDecimal.valueOf(500.00), createDto.description().date(), "Loja Teste", "1234567890", "AUTH123",
@@ -80,7 +78,6 @@ class TransactionServiceImplTest {
         TransactionDto result = transactionService.createTransaction(createDto);
 
         assertThat(result).isNotNull();
-        assertThat(result.id()).isNotNull();
         assertThat(result.transactionId()).isEqualTo(createDto.transactionId());
         assertThat(result.card()).isEqualTo(createDto.card());
         assertThat(result.description().transactionStatus()).isEqualTo(ETransactionStatus.AUTHORIZED);
@@ -100,7 +97,6 @@ class TransactionServiceImplTest {
         transaction.setCard(createDto.card());
 
         TransactionDto expectedDto = new TransactionDto(
-                UUID.randomUUID(),
                 createDto.transactionId(),
                 createDto.card(),
                 new DescriptionDto(BigDecimal.valueOf(1500.00), createDto.description().date(), "Loja Teste", "1234567890", "AUTH123",
@@ -115,7 +111,6 @@ class TransactionServiceImplTest {
         TransactionDto result = transactionService.createTransaction(createDto);
 
         assertThat(result).isNotNull();
-        assertThat(result.id()).isNotNull();
         assertThat(result.transactionId()).isEqualTo(createDto.transactionId());
         assertThat(result.card()).isEqualTo(createDto.card());
         assertThat(result.description().transactionStatus()).isEqualTo(ETransactionStatus.DENIED);
@@ -164,7 +159,6 @@ class TransactionServiceImplTest {
         transaction.setDescription(description);
 
         TransactionDto expectedDto = new TransactionDto(
-                transaction.getId(),
                 transaction.getTransactionId(),
                 transaction.getCard(),
                 new DescriptionDto(BigDecimal.valueOf(500.00), LocalDateTime.now(), "Loja Teste", "123", "AUTH",
@@ -191,6 +185,69 @@ class TransactionServiceImplTest {
 
         FailureBadRequestException result = assertThrows(FailureBadRequestException.class,
                 () -> transactionService.reversalTransaction("TXN-999"));
+
+        assertThat(result.getMessage()).isEqualTo(message);
+    }
+
+    @Test
+    @DisplayName("should return transaction when status is REVERSED")
+    void shouldReturnTransactionWhenStatusIsReversed() {
+        Description description = new Description();
+        description.setTransactionStatus(ETransactionStatus.REVERSED);
+
+        Transaction transaction = new Transaction();
+        transaction.setTransactionId("TXN-001");
+        transaction.setCard("1234567890123456");
+        transaction.setDescription(description);
+
+        TransactionDto expectedDto = new TransactionDto(
+                transaction.getTransactionId(),
+                transaction.getCard(),
+                new DescriptionDto(BigDecimal.valueOf(500.00), LocalDateTime.now(), "Loja Teste", "123", "AUTH",
+                        ETransactionStatus.REVERSED),
+                new PaymentMethodDto("AVISTA", 1));
+
+        when(transactionRepository.findByTransactionId(transaction.getTransactionId())).thenReturn(Optional.of(transaction));
+        when(transactionMapper.convertTransactionToTransactionDto(transaction)).thenReturn(expectedDto);
+
+        TransactionDto result = transactionService.searchTransactionById(transaction.getTransactionId());
+
+        assertThat(result).isNotNull();
+        assertThat(result.description().transactionStatus()).isEqualTo(ETransactionStatus.REVERSED);
+    }
+
+    @Test
+    @DisplayName("should throw an exception when searching transaction with non-reversed status")
+    void shouldThrowExceptionWhenSearchingTransactionWithNonReversedStatus() {
+        Description description = new Description();
+        description.setTransactionStatus(ETransactionStatus.AUTHORIZED);
+
+        Transaction transaction = new Transaction();
+        transaction.setTransactionId("TXN-001");
+        transaction.setCard("1234567890123456");
+        transaction.setDescription(description);
+
+        String message = "Transação não reembolsável";
+
+        when(transactionRepository.findByTransactionId(transaction.getTransactionId())).thenReturn(Optional.of(transaction));
+        when(messageSource.getMessage(anyString(),any(),any(Locale.class))).thenReturn(message);
+
+        FailureBadRequestException result = assertThrows(FailureBadRequestException.class,
+                () -> transactionService.searchTransactionById(transaction.getTransactionId()));
+
+        assertThat(result.getMessage()).isEqualTo(message);
+    }
+
+    @Test
+    @DisplayName("should throw an exception when searching transaction not found")
+    void shouldThrowExceptionWhenSearchingTransactionNotFound() {
+        String message = "Transação não encontrada";
+
+        when(transactionRepository.findByTransactionId(anyString())).thenReturn(Optional.empty());
+        when(messageSource.getMessage(anyString(),any(),any(Locale.class))).thenReturn(message);
+
+        FailureBadRequestException result = assertThrows(FailureBadRequestException.class,
+                () -> transactionService.searchTransactionById("TXN-999"));
 
         assertThat(result.getMessage()).isEqualTo(message);
     }
