@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.jdbc.Sql;
 
 public class TransactionControllerTest extends BaseIntegrationTest {
     private static final String FUTURE_DATE = LocalDateTime.now().plusHours(1).format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
@@ -275,5 +276,35 @@ public class TransactionControllerTest extends BaseIntegrationTest {
                         """.formatted(FUTURE_DATE))
                 .when().post("/api/v1/transaction")
                 .then().statusCode(400);
+    }
+
+    @Sql({"/seeds/init.sql","/seeds/insert_transaction.sql"})
+    @Test
+    @DisplayName("Should reverse a transaction with authorized status")
+    void shouldReverseTransactionWithAuthorizedStatus() {
+        given()
+                .when().post("/api/v1/transaction/102030405062/reversal")
+                .then()
+                .statusCode(201)
+                .body("transactionId",equalTo("102030405062"))
+                .body("description.transactionStatus",equalTo("REVERSED"));
+    }
+
+    @Test
+    @DisplayName("Should return 400 when reversing a transaction not found")
+    void shouldReturn400WhenReversingTransactionNotFound() {
+        given()
+                .when().post("/api/v1/transaction/NON-EXISTENT/reversal")
+                .then()
+                .statusCode(400);
+    }
+
+    @Test
+    @DisplayName("Should return 400 when reversing a transaction with non-authorized status")
+    void shouldReturn400WhenReversingTransactionWithNonAuthorizedStatus() {
+        given()
+                .when().post("/api/v1/transaction/102030405068/reversal")
+                .then()
+                .statusCode(400);
     }
 }

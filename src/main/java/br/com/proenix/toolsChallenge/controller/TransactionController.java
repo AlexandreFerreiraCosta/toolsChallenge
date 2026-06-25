@@ -7,7 +7,6 @@ import br.com.proenix.toolsChallenge.util.deserializer.RemoveSpecialCharacterDes
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.http.HttpStatus;
@@ -38,7 +37,6 @@ public class TransactionController {
     @Operation(summary = "Estorna transação.")
     public ResponseEntity<TransactionDto> reversalTransaction(
             @PathVariable("transactionId") @JsonDeserialize(using = RemoveSpecialCharacterDeserializer.class)
-            @NotBlank(message = "{not-blank}")
             @Length(max = 20) String transactionId) {
         return ResponseEntity.status(HttpStatus.CREATED).body(iTransactionService.reversalTransaction(transactionId));
     }

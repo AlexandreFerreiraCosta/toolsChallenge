@@ -1,6 +1,7 @@
 package br.com.proenix.toolsChallenge.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -54,6 +55,31 @@ public class GlobalExceptionHandler {
         apiErrorResponse
                 .setMessage((messageSource.getMessage(REQUESTED_PATH_WAS_NOT_FOUND_ON_THE_SERVER,null,LocaleContextHolder.getLocale())));
         apiErrorResponse.setPath(noResourceFoundException.getResourcePath());
+
+        return new ResponseEntity<>(apiErrorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ApiErrorResponse> constraintViolationException(ConstraintViolationException constraintViolationException,
+            HttpServletRequest request) {
+
+        List<FieldErrorResponse> fieldErrors = constraintViolationException.getConstraintViolations()
+                .stream().map(violation -> {
+                    FieldErrorResponse fieldError = new FieldErrorResponse();
+                    fieldError.setField(violation.getPropertyPath().toString());
+                    fieldError.setMessage(violation.getMessage());
+                    fieldError.setRejectedValue(violation.getInvalidValue());
+                    return fieldError;
+                }).toList();
+
+        ApiErrorResponse apiErrorResponse = new ApiErrorResponse();
+        apiErrorResponse.setDateError(LocalDateTime.now());
+        apiErrorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+        apiErrorResponse.setError(HttpStatus.BAD_REQUEST.getReasonPhrase());
+        apiErrorResponse.setMessage(messageSource.getMessage(VALIDATION_ERROR_SUBMITTED,null,LocaleContextHolder.getLocale()));
+        apiErrorResponse.setPath(request.getRequestURI());
+        apiErrorResponse.setErrors(fieldErrors);
 
         return new ResponseEntity<>(apiErrorResponse, HttpStatus.BAD_REQUEST);
     }
