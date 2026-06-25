@@ -12,6 +12,7 @@ import br.com.proenix.toolsChallenge.dto.transaction.PaymentMethodCreateDto;
 import br.com.proenix.toolsChallenge.dto.transaction.PaymentMethodDto;
 import br.com.proenix.toolsChallenge.dto.transaction.TransactionCreateDto;
 import br.com.proenix.toolsChallenge.dto.transaction.TransactionDto;
+import br.com.proenix.toolsChallenge.entity.Description;
 import br.com.proenix.toolsChallenge.entity.Transaction;
 import br.com.proenix.toolsChallenge.enums.ETransactionStatus;
 import br.com.proenix.toolsChallenge.exception.FailureBadRequestException;
@@ -144,5 +145,79 @@ class TransactionServiceImplTest {
 
         assertThat(result).isNotNull();
         assertThat(message).isEqualTo(result.getMessage());
+    }
+
+    @Test
+    @DisplayName("should reverse a transaction with authorized status")
+    void shouldReverseTransactionWithAuthorizedStatus() {
+        Description description = new Description();
+        description.setValue(BigDecimal.valueOf(500.00));
+        description.setDate(LocalDateTime.now());
+        description.setEstablishment("Loja Teste");
+        description.setNsu("123");
+        description.setAuthorizationCode("AUTH");
+        description.setTransactionStatus(ETransactionStatus.AUTHORIZED);
+
+        Transaction transaction = new Transaction();
+        transaction.setTransactionId("TXN-001");
+        transaction.setCard("1234567890123456");
+        transaction.setDescription(description);
+
+        TransactionDto expectedDto = new TransactionDto(
+                transaction.getId(),
+                transaction.getTransactionId(),
+                transaction.getCard(),
+                new DescriptionDto(BigDecimal.valueOf(500.00), LocalDateTime.now(), "Loja Teste", "123", "AUTH", ETransactionStatus.REVERSED),
+                new PaymentMethodDto("AVISTA", 1));
+
+        when(transactionRepository.findByTransactionId(transaction.getTransactionId())).thenReturn(Optional.of(transaction));
+        when(transactionRepository.save(transaction)).thenReturn(transaction);
+        when(transactionMapper.convertTransactionToTransactionDto(transaction)).thenReturn(expectedDto);
+
+        TransactionDto result = transactionService.reversalTransaction(transaction.getTransactionId());
+
+        assertThat(result).isNotNull();
+        assertThat(result.description().transactionStatus()).isEqualTo(ETransactionStatus.REVERSED);
+    }
+
+    @Test
+    @DisplayName("should throw an exception when reversing a transaction not found")
+    void shouldThrowExceptionWhenReversingTransactionNotFound() {
+        String message = "Transação não encontrada";
+
+        when(transactionRepository.findByTransactionId(anyString())).thenReturn(Optional.empty());
+        when(messageSource.getMessage(anyString(), any(), any(Locale.class))).thenReturn(message);
+
+        FailureBadRequestException result = assertThrows(FailureBadRequestException.class,
+                () -> transactionService.reversalTransaction("TXN-999"));
+
+        assertThat(result.getMessage()).isEqualTo(message);
+    }
+
+    @Test
+    @DisplayName("should throw an exception when reversing a transaction with non-authorized status")
+    void shouldThrowExceptionWhenReversingTransactionWithNonAuthorizedStatus() {
+        Description description = new Description();
+        description.setValue(BigDecimal.valueOf(500.00));
+        description.setDate(LocalDateTime.now());
+        description.setEstablishment("Loja Teste");
+        description.setNsu("123");
+        description.setAuthorizationCode("AUTH");
+        description.setTransactionStatus(ETransactionStatus.DENIED);
+
+        Transaction transaction = new Transaction();
+        transaction.setTransactionId("TXN-001");
+        transaction.setCard("1234567890123456");
+        transaction.setDescription(description);
+
+        String message = "Estorno processado apenas para transações com status AUTORIZADO";
+
+        when(transactionRepository.findByTransactionId(transaction.getTransactionId())).thenReturn(Optional.of(transaction));
+        when(messageSource.getMessage(anyString(), any(), any(Locale.class))).thenReturn(message);
+
+        FailureBadRequestException result = assertThrows(FailureBadRequestException.class,
+                () -> transactionService.reversalTransaction(transaction.getTransactionId()));
+
+        assertThat(result.getMessage()).isEqualTo(message);
     }
 }
