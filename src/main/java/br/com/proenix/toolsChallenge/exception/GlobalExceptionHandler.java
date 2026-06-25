@@ -45,45 +45,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(apiErrorResponse, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(NoResourceFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<ApiErrorResponse> noResourceFoundException(NoResourceFoundException noResourceFoundException) {
-        ApiErrorResponse apiErrorResponse = new ApiErrorResponse();
-        apiErrorResponse.setDateError(LocalDateTime.now());
-        apiErrorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-        apiErrorResponse.setError(HttpStatus.BAD_REQUEST.getReasonPhrase());
-        apiErrorResponse
-                .setMessage((messageSource.getMessage(REQUESTED_PATH_WAS_NOT_FOUND_ON_THE_SERVER,null,LocaleContextHolder.getLocale())));
-        apiErrorResponse.setPath(noResourceFoundException.getResourcePath());
-
-        return new ResponseEntity<>(apiErrorResponse, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(ConstraintViolationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ApiErrorResponse> constraintViolationException(ConstraintViolationException constraintViolationException,
-            HttpServletRequest request) {
-
-        List<FieldErrorResponse> fieldErrors = constraintViolationException.getConstraintViolations()
-                .stream().map(violation -> {
-                    FieldErrorResponse fieldError = new FieldErrorResponse();
-                    fieldError.setField(violation.getPropertyPath().toString());
-                    fieldError.setMessage(violation.getMessage());
-                    fieldError.setRejectedValue(violation.getInvalidValue());
-                    return fieldError;
-                }).toList();
-
-        ApiErrorResponse apiErrorResponse = new ApiErrorResponse();
-        apiErrorResponse.setDateError(LocalDateTime.now());
-        apiErrorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-        apiErrorResponse.setError(HttpStatus.BAD_REQUEST.getReasonPhrase());
-        apiErrorResponse.setMessage(messageSource.getMessage(VALIDATION_ERROR_SUBMITTED,null,LocaleContextHolder.getLocale()));
-        apiErrorResponse.setPath(request.getRequestURI());
-        apiErrorResponse.setErrors(fieldErrors);
-
-        return new ResponseEntity<>(apiErrorResponse, HttpStatus.BAD_REQUEST);
-    }
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ApiErrorResponse> methodArgumentNotValidException(MethodArgumentNotValidException methodArgumentNotValidException,
@@ -127,6 +88,45 @@ public class GlobalExceptionHandler {
                 new Object[]{invalidFormatException.getValue(),pathCompleto.isEmpty() ? FIELD : pathCompleto,},
                 LocaleContextHolder.getLocale()));
         apiErrorResponse.setPath(request.getRequestURI());
+
+        return new ResponseEntity<>(apiErrorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<ApiErrorResponse> noResourceFoundException(NoResourceFoundException noResourceFoundException) {
+        ApiErrorResponse apiErrorResponse = new ApiErrorResponse();
+        apiErrorResponse.setDateError(LocalDateTime.now());
+        apiErrorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+        apiErrorResponse.setError(HttpStatus.BAD_REQUEST.getReasonPhrase());
+        apiErrorResponse
+                .setMessage((messageSource.getMessage(REQUESTED_PATH_WAS_NOT_FOUND_ON_THE_SERVER,null,LocaleContextHolder.getLocale())));
+        apiErrorResponse.setPath(noResourceFoundException.getResourcePath());
+
+        return new ResponseEntity<>(apiErrorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ApiErrorResponse> constraintViolationException(ConstraintViolationException constraintViolationException,
+                                                                         HttpServletRequest request) {
+
+        List<FieldErrorResponse> fieldErrors = constraintViolationException.getConstraintViolations()
+                .stream().map(violation -> {
+                    FieldErrorResponse fieldError = new FieldErrorResponse();
+                    fieldError.setField(violation.getPropertyPath().toString());
+                    fieldError.setMessage(violation.getMessage());
+                    fieldError.setRejectedValue(violation.getInvalidValue());
+                    return fieldError;
+                }).toList();
+
+        ApiErrorResponse apiErrorResponse = new ApiErrorResponse();
+        apiErrorResponse.setDateError(LocalDateTime.now());
+        apiErrorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+        apiErrorResponse.setError(HttpStatus.BAD_REQUEST.getReasonPhrase());
+        apiErrorResponse.setMessage(messageSource.getMessage(VALIDATION_ERROR_SUBMITTED,null,LocaleContextHolder.getLocale()));
+        apiErrorResponse.setPath(request.getRequestURI());
+        apiErrorResponse.setErrors(fieldErrors);
 
         return new ResponseEntity<>(apiErrorResponse, HttpStatus.BAD_REQUEST);
     }
