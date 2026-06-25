@@ -21,6 +21,7 @@ public class TransactionServiceImpl implements ITransactionService {
     private static final String IS_ALREADY_TRANSACTION_REGISTERED_WITH_ID = "is-already-transaction-registered-with-id";
     private static final String TRANSACTION_NOT_FOUND = "transaction-not-found";
     private static final String REVERSAL_PROCESSED_FOR_TRANSACTIONS_AUTHORIZED_STATUS = "reversal-processed-for-transactions-authorized-status";
+    private static final String TRANSACTION_NON_REFUNDABLE = "transaction-non-refundable";
 
     private final TransactionMapper transactionMapper;
     private final TransactionRepository transactionRepository;
@@ -39,9 +40,14 @@ public class TransactionServiceImpl implements ITransactionService {
     }
 
     @Override
-    public Transaction searchTransaction(String transactionId) {
-        return transactionRepository.findByTransactionId(transactionId).orElseThrow(() -> new FailureBadRequestException(
-                messageSource.getMessage(TRANSACTION_NOT_FOUND,null,LocaleContextHolder.getLocale())));
+    public TransactionDto searchTransactionById(String transactionId) {
+        Transaction transaction = searchTransaction(transactionId);
+        if (!transaction.getDescription().getTransactionStatus().equals(ETransactionStatus.REVERSED)) {
+            throw new FailureBadRequestException(
+                    messageSource.getMessage(TRANSACTION_NON_REFUNDABLE,null,LocaleContextHolder.getLocale()));
+        }
+
+        return transactionMapper.convertTransactionToTransactionDto(searchTransaction(transactionId));
     }
 
     @Override
@@ -52,6 +58,11 @@ public class TransactionServiceImpl implements ITransactionService {
         transaction.getDescription().setTransactionStatus(ETransactionStatus.REVERSED);
 
         return transactionMapper.convertTransactionToTransactionDto(transactionRepository.save(transaction));
+    }
+
+    private Transaction searchTransaction(String transactionId) {
+        return transactionRepository.findByTransactionId(transactionId).orElseThrow(() -> new FailureBadRequestException(
+                messageSource.getMessage(TRANSACTION_NOT_FOUND,null,LocaleContextHolder.getLocale())));
     }
 
     private void validateTransactionId(String transactionId) {
