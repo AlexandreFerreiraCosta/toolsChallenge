@@ -80,13 +80,11 @@ public class TransactionServiceImpl implements ITransactionService {
         return transactionMapper.convertPageTransactionToPageTransactionDto(transactionPage);
     }
 
-    @Transactional(readOnly = true)
     private Transaction searchTransaction(String transactionId) {
         return transactionRepository.findByTransactionId(transactionId).orElseThrow(() -> new FailureBadRequestException(
                 messageSource.getMessage(TRANSACTION_NOT_FOUND,null,LocaleContextHolder.getLocale())));
     }
 
-    @Transactional(readOnly = true)
     private void validateTransactionId(String transactionId) {
         if (transactionRepository.findByTransactionId(transactionId).isPresent()) {
             throw new FailureBadRequestException(

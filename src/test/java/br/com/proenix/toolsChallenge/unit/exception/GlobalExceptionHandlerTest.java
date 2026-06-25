@@ -178,11 +178,11 @@ class GlobalExceptionHandlerTest {
 
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getDateError()).isNotNull();
-        assertThat(response.getBody().getStatus()).isEqualTo(400);
-        assertThat(response.getBody().getError()).isEqualTo("Bad Request");
+        assertThat(response.getBody().getStatus()).isEqualTo(404);
+        assertThat(response.getBody().getError()).isEqualTo("Not Found");
         assertThat(response.getBody().getMessage()).isEqualTo("o caminho solicitado não foi encontrado no servidor");
         assertThat(response.getBody().getPath()).isEqualTo("/api/transactions");
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(response.getBody().getErrors()).isNull();
     }
 }
