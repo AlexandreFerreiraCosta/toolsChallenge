@@ -19,7 +19,7 @@ Depois da instalação das dependências é necessário subir o container docker
 
 Navegue até a pasta **containers** e execute o seguinte comando. Obs: e necessário ter o docker configurado corretamente.
     
-    $ docker compose -f docker-compose-postgres.yaml  up -d --build
+    docker compose -f docker-compose-postgres.yaml  up -d --build
 
 O comando acima irá iniciar um container na porta 5432. Para acessar o banco de dados, basta utilizar as seguintes credências:
 
@@ -46,7 +46,7 @@ Agora basta subir a aplicação na IDE utilizada.
 ## A aplicação será executada na porta 8080.
 
 ## Para acessa a documentação da API basta acessar a seguinte URL.
-    $ http://localhost:8080/swagger-ui/index.html#/
+    http://localhost:8080/swagger-ui/index.html#/
 
 ## A aplicação trabalha com internacionalização i18n. Segue exemplo de requisição.
 
@@ -58,12 +58,18 @@ linguagens aceitas :
 ## Plugins da aplicação
 **SPOTLESS:**  Garante que todos os desenvolvedores sigam o mesmo padrão de indentação, chaves e espaçamento, eliminando discussões de estilo. Para utilizar basta rodar o comando abaixo.
 
-    $ mvn spotless:apply
+    mvn spotless:apply
 
 **Jacoco:** Mede a cobertura de código (code coverage) em projetos Java.
 
-    $ mvn clean test
-    $http://localhost:63342/toolsChallenge/target/site/jacoco/index.html
+    mvn clean test
+    http://localhost:63342/toolsChallenge/target/site/jacoco/index.html
+
+## Rodando a aplicação fora da IDE
+* Git clone https://github.com/seu-repo.git.
+* Entrar na pasta do projeto. 
+
+      ./mvnw spring-boot:run
 
 ## Arquitetura Futura e Escalabilidade
 Como o critério de autorização não foi mapeado no enunciado, foi implementada uma regra de negócio onde transações com valor igual ou superior a R$ 1.000,00 são automaticamente salvas com o status 'NEGADO', e valores inferiores são 'AUTORIZADO'.
