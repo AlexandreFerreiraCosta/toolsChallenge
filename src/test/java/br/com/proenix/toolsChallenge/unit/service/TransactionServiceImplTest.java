@@ -1,17 +1,13 @@
 package br.com.proenix.toolsChallenge.unit.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-
+import br.com.proenix.toolsChallenge.dto.general.PageDto;
 import br.com.proenix.toolsChallenge.dto.transaction.DescriptionCreateDto;
 import br.com.proenix.toolsChallenge.dto.transaction.DescriptionDto;
 import br.com.proenix.toolsChallenge.dto.transaction.PaymentMethodCreateDto;
 import br.com.proenix.toolsChallenge.dto.transaction.PaymentMethodDto;
 import br.com.proenix.toolsChallenge.dto.transaction.TransactionCreateDto;
 import br.com.proenix.toolsChallenge.dto.transaction.TransactionDto;
+import br.com.proenix.toolsChallenge.dto.transaction.TransactionFilterDto;
 import br.com.proenix.toolsChallenge.entity.Description;
 import br.com.proenix.toolsChallenge.entity.Transaction;
 import br.com.proenix.toolsChallenge.enums.ETransactionStatus;
@@ -20,11 +16,6 @@ import br.com.proenix.toolsChallenge.mapper.TransactionMapper;
 import br.com.proenix.toolsChallenge.repository.TransactionRepository;
 import br.com.proenix.toolsChallenge.service.TransactionServiceImpl;
 import br.com.proenix.toolsChallenge.service.interfaces.ITransactionValidatorService;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,6 +23,23 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class TransactionServiceImplTest {
@@ -277,5 +285,67 @@ class TransactionServiceImplTest {
                 () -> transactionService.reversalTransaction(transaction.getTransactionId()));
 
         assertThat(result.getMessage()).isEqualTo(message);
+    }
+
+    @Test
+    @DisplayName("should return paginated transactions with filter")
+    void shouldReturnPaginatedTransactionsWithFilter() {
+        TransactionFilterDto filterDto = new TransactionFilterDto("TXN-001", null, null, null, null);
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Transaction transaction = new Transaction();
+        transaction.setTransactionId("TXN-001");
+        transaction.setCard("1234567890123456");
+
+        TransactionDto transactionDto = new TransactionDto(
+                "TXN-001",
+                "1234567890123456",
+                new DescriptionDto(BigDecimal.valueOf(500.00), LocalDateTime.now(), "Loja Teste", "123", "AUTH",
+                        ETransactionStatus.AUTHORIZED),
+                new PaymentMethodDto("AVISTA", 1));
+
+        Page<Transaction> transactionPage = new PageImpl<>(List.of(transaction), pageable, 1);
+
+        PageDto<TransactionDto> expectedPageDto = new PageDto<>();
+        expectedPageDto.setContent(List.of(transactionDto));
+        expectedPageDto.setPageNumber(0);
+        expectedPageDto.setPageSize(10);
+        expectedPageDto.setTotalElements(1);
+        expectedPageDto.setTotalPages(1);
+        expectedPageDto.setLast(true);
+
+        when(transactionRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(transactionPage);
+        when(transactionMapper.convertPageTransactionToPageTransactionDto(transactionPage)).thenReturn(expectedPageDto);
+
+        PageDto<TransactionDto> result = transactionService.searchTransactions(filterDto, pageable);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        assertThat(result.getContent().getFirst().transactionId()).isEqualTo("TXN-001");
+    }
+
+    @Test
+    @DisplayName("should return empty page when no transactions match filter")
+    void shouldReturnEmptyPageWhenNoTransactionsMatchFilter() {
+        TransactionFilterDto filterDto = new TransactionFilterDto(null, null, "Loja Inexistente", null, null);
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Page<Transaction> emptyPage = new PageImpl<>(List.of(), pageable, 0);
+
+        PageDto<TransactionDto> expectedPageDto = new PageDto<>();
+        expectedPageDto.setContent(List.of());
+        expectedPageDto.setTotalElements(0);
+        expectedPageDto.setTotalPages(0);
+        expectedPageDto.setLast(true);
+
+        when(transactionRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(emptyPage);
+        when(transactionMapper.convertPageTransactionToPageTransactionDto(emptyPage)).thenReturn(expectedPageDto);
+
+        PageDto<TransactionDto> result = transactionService.searchTransactions(filterDto, pageable);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getContent()).isEmpty();
+        assertThat(result.getTotalElements()).isZero();
     }
 }
