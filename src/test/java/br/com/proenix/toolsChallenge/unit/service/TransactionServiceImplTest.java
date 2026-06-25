@@ -167,7 +167,8 @@ class TransactionServiceImplTest {
                 transaction.getId(),
                 transaction.getTransactionId(),
                 transaction.getCard(),
-                new DescriptionDto(BigDecimal.valueOf(500.00), LocalDateTime.now(), "Loja Teste", "123", "AUTH", ETransactionStatus.REVERSED),
+                new DescriptionDto(BigDecimal.valueOf(500.00), LocalDateTime.now(), "Loja Teste", "123", "AUTH",
+                        ETransactionStatus.REVERSED),
                 new PaymentMethodDto("AVISTA", 1));
 
         when(transactionRepository.findByTransactionId(transaction.getTransactionId())).thenReturn(Optional.of(transaction));
@@ -186,7 +187,7 @@ class TransactionServiceImplTest {
         String message = "Transação não encontrada";
 
         when(transactionRepository.findByTransactionId(anyString())).thenReturn(Optional.empty());
-        when(messageSource.getMessage(anyString(), any(), any(Locale.class))).thenReturn(message);
+        when(messageSource.getMessage(anyString(),any(),any(Locale.class))).thenReturn(message);
 
         FailureBadRequestException result = assertThrows(FailureBadRequestException.class,
                 () -> transactionService.reversalTransaction("TXN-999"));
@@ -213,7 +214,7 @@ class TransactionServiceImplTest {
         String message = "Estorno processado apenas para transações com status AUTORIZADO";
 
         when(transactionRepository.findByTransactionId(transaction.getTransactionId())).thenReturn(Optional.of(transaction));
-        when(messageSource.getMessage(anyString(), any(), any(Locale.class))).thenReturn(message);
+        when(messageSource.getMessage(anyString(),any(),any(Locale.class))).thenReturn(message);
 
         FailureBadRequestException result = assertThrows(FailureBadRequestException.class,
                 () -> transactionService.reversalTransaction(transaction.getTransactionId()));
