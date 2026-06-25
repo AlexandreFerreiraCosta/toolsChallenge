@@ -10,7 +10,11 @@ import br.com.proenix.toolsChallenge.exception.ApiErrorResponse;
 import br.com.proenix.toolsChallenge.exception.FailureBadRequestException;
 import br.com.proenix.toolsChallenge.exception.GlobalExceptionHandler;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Path;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -130,6 +134,35 @@ class GlobalExceptionHandlerTest {
         assertThat(response.getBody().getStatus()).isEqualTo(400);
         assertThat(response.getBody().getError()).isEqualTo("Bad Request");
         assertThat(response.getBody().getMessage()).isEqualTo("campo recebeu um valor inválido");
+        assertThat(response.getBody().getPath()).isEqualTo("/api/transactions");
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    @DisplayName("should return 400 with field errors for ConstraintViolationException")
+    void shouldReturn400WithFieldErrorsForConstraintViolationException() {
+        when(request.getRequestURI()).thenReturn("/api/transactions");
+        when(messageSource.getMessage(anyString(), any(), any())).thenReturn("Validation error");
+
+        ConstraintViolation<?> violation = mock(ConstraintViolation.class);
+        Path path = mock(Path.class);
+        when(path.toString()).thenReturn("card");
+        when(violation.getPropertyPath()).thenReturn(path);
+        when(violation.getMessage()).thenReturn("o valor não pode ser nulo.");
+        when(violation.getInvalidValue()).thenReturn(null);
+
+        ConstraintViolationException constraintViolationException = new ConstraintViolationException(Set.of(violation));
+        ResponseEntity<ApiErrorResponse> response = handler.constraintViolationException(constraintViolationException, request);
+
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getDateError()).isNotNull();
+        assertThat(response.getBody().getStatus()).isEqualTo(400);
+        assertThat(response.getBody().getError()).isEqualTo("Bad Request");
+        assertThat(response.getBody().getMessage()).isEqualTo("Validation error");
+        assertThat(response.getBody().getErrors()).hasSize(1);
+        assertThat(response.getBody().getErrors().getFirst().getField()).isEqualTo("card");
+        assertThat(response.getBody().getErrors().getFirst().getMessage()).isEqualTo("o valor não pode ser nulo.");
+        assertThat(response.getBody().getErrors().getFirst().getRejectedValue()).isNull();
         assertThat(response.getBody().getPath()).isEqualTo("/api/transactions");
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
