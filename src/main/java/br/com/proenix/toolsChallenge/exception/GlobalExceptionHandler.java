@@ -94,7 +94,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoResourceFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<ApiErrorResponse> noResourceFoundException(NoResourceFoundException noResourceFoundException,HttpServletRequest request) {
+    public ResponseEntity<ApiErrorResponse> noResourceFoundException(NoResourceFoundException noResourceFoundException,
+            HttpServletRequest request) {
         ApiErrorResponse apiErrorResponse = new ApiErrorResponse();
         apiErrorResponse.setDateError(LocalDateTime.now());
         apiErrorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -109,7 +110,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ApiErrorResponse> constraintViolationException(ConstraintViolationException constraintViolationException,
-                                                                         HttpServletRequest request) {
+            HttpServletRequest request) {
 
         List<FieldErrorResponse> fieldErrors = constraintViolationException.getConstraintViolations()
                 .stream().map(violation -> {
