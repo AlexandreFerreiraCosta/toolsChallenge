@@ -94,14 +94,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoResourceFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<ApiErrorResponse> noResourceFoundException(NoResourceFoundException noResourceFoundException) {
+    public ResponseEntity<ApiErrorResponse> noResourceFoundException(NoResourceFoundException noResourceFoundException,HttpServletRequest request) {
         ApiErrorResponse apiErrorResponse = new ApiErrorResponse();
         apiErrorResponse.setDateError(LocalDateTime.now());
         apiErrorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
         apiErrorResponse.setError(HttpStatus.BAD_REQUEST.getReasonPhrase());
         apiErrorResponse
                 .setMessage((messageSource.getMessage(REQUESTED_PATH_WAS_NOT_FOUND_ON_THE_SERVER,null,LocaleContextHolder.getLocale())));
-        apiErrorResponse.setPath(noResourceFoundException.getResourcePath());
+        apiErrorResponse.setPath(request.getRequestURI());
 
         return new ResponseEntity<>(apiErrorResponse, HttpStatus.BAD_REQUEST);
     }

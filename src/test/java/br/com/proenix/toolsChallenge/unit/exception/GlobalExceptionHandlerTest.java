@@ -18,11 +18,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.MessageSource;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import tools.jackson.core.JacksonException.Reference;
 import tools.jackson.databind.exc.InvalidFormatException;
 
@@ -130,5 +132,24 @@ class GlobalExceptionHandlerTest {
         assertThat(response.getBody().getMessage()).isEqualTo("campo recebeu um valor inválido");
         assertThat(response.getBody().getPath()).isEqualTo("/api/transactions");
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    @DisplayName("should return 400 with message for NoResourceFoundException")
+    void shouldReturn400ForNoResourceFoundException() {
+        when(request.getRequestURI()).thenReturn("/api/transactions");
+        when(messageSource.getMessage(anyString(), any(), any())).thenReturn("o caminho solicitado não foi encontrado no servidor");
+
+        NoResourceFoundException noResourceFoundException = new NoResourceFoundException(HttpMethod.GET, "/api/transactions", "/api/transactions");
+        ResponseEntity<ApiErrorResponse> response = handler.noResourceFoundException(noResourceFoundException,request);
+
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getDateError()).isNotNull();
+        assertThat(response.getBody().getStatus()).isEqualTo(400);
+        assertThat(response.getBody().getError()).isEqualTo("Bad Request");
+        assertThat(response.getBody().getMessage()).isEqualTo("o caminho solicitado não foi encontrado no servidor");
+        assertThat(response.getBody().getPath()).isEqualTo("/api/transactions");
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody().getErrors()).isNull();
     }
 }
