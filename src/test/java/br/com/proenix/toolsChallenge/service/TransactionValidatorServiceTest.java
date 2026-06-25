@@ -1,18 +1,17 @@
 package br.com.proenix.toolsChallenge.service;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
 import br.com.proenix.toolsChallenge.entity.Description;
 import br.com.proenix.toolsChallenge.entity.Transaction;
 import br.com.proenix.toolsChallenge.enums.ETransactionStatus;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 class TransactionValidatorServiceTest {
@@ -22,7 +21,7 @@ class TransactionValidatorServiceTest {
 
     @Test
     @DisplayName("should validator with approved status")
-    void shouldValidatorWithApprovedStatus(){
+    void shouldValidatorWithApprovedStatus() {
         Description description = new Description();
         description.setValue(BigDecimal.valueOf(500.00));
         description.setDate(LocalDateTime.now());
@@ -40,7 +39,7 @@ class TransactionValidatorServiceTest {
 
     @Test
     @DisplayName("should validator with denied status")
-    void shouldValidatorWithDeniedStatus(){
+    void shouldValidatorWithDeniedStatus() {
         Description description = new Description();
         description.setValue(BigDecimal.valueOf(1500.00));
         description.setDate(LocalDateTime.now());
