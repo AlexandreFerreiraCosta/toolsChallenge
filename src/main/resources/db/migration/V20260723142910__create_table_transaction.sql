@@ -1,5 +1,7 @@
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 CREATE TABLE transaction (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    transaction_id VARCHAR(40) PRIMARY KEY,
     card VARCHAR(20) NOT NULL,
     value DECIMAL(10, 2) NOT NULL,
     date TIMESTAMP NOT NULL,
