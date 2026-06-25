@@ -283,6 +283,7 @@ public class TransactionControllerTest extends BaseIntegrationTest {
     @DisplayName("Should reverse a transaction with authorized status")
     void shouldReverseTransactionWithAuthorizedStatus() {
         given()
+                .contentType("application/json")
                 .when().post("/api/v1/transaction/102030405062/reversal")
                 .then()
                 .statusCode(201)
@@ -294,6 +295,7 @@ public class TransactionControllerTest extends BaseIntegrationTest {
     @DisplayName("Should return 400 when reversing a transaction not found")
     void shouldReturn400WhenReversingTransactionNotFound() {
         given()
+                .contentType("application/json")
                 .when().post("/api/v1/transaction/NON-EXISTENT/reversal")
                 .then()
                 .statusCode(400);
@@ -303,8 +305,59 @@ public class TransactionControllerTest extends BaseIntegrationTest {
     @DisplayName("Should return 400 when reversing a transaction with non-authorized status")
     void shouldReturn400WhenReversingTransactionWithNonAuthorizedStatus() {
         given()
+                .contentType("application/json")
                 .when().post("/api/v1/transaction/102030405068/reversal")
                 .then()
                 .statusCode(400);
+    }
+
+    @Sql({"/seeds/init.sql", "/seeds/insert_transaction.sql"})
+    @Test
+    @DisplayName("Should return paginated transactions without filters")
+    void shouldReturnPaginatedTransactionsWithoutFilters() {
+        given()
+                .when().get("/api/v1/transaction")
+                .then()
+                .statusCode(200)
+                .body("totalElements", equalTo(3))
+                .body("content[0].transactionId", notNullValue());
+    }
+
+    @Sql({"/seeds/init.sql", "/seeds/insert_transaction.sql"})
+    @Test
+    @DisplayName("Should return transactions filtered by transactionId")
+    void shouldReturnTransactionsFilteredByTransactionId() {
+        given()
+                .queryParam("transactionId", "102030405062")
+                .when().get("/api/v1/transaction")
+                .then()
+                .statusCode(200)
+                .body("totalElements", equalTo(1))
+                .body("content[0].transactionId", equalTo("102030405062"));
+    }
+
+    @Sql({"/seeds/init.sql", "/seeds/insert_transaction.sql"})
+    @Test
+    @DisplayName("Should return transactions filtered by status")
+    void shouldReturnTransactionsFilteredByStatus() {
+        given()
+                .queryParam("transactionStatus", "AUTHORIZED")
+                .when().get("/api/v1/transaction")
+                .then()
+                .statusCode(200)
+                .body("totalElements", equalTo(1))
+                .body("content[0].description.transactionStatus", equalTo("AUTHORIZED"));
+    }
+
+    @Sql({"/seeds/init.sql", "/seeds/insert_transaction.sql"})
+    @Test
+    @DisplayName("Should return empty page when no transactions match filter")
+    void shouldReturnEmptyPageWhenNoTransactionsMatchFilter() {
+        given()
+                .queryParam("transactionId", "NON-EXISTENT")
+                .when().get("/api/v1/transaction")
+                .then()
+                .statusCode(200)
+                .body("totalElements", equalTo(0));
     }
 }

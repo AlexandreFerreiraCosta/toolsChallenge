@@ -135,6 +135,13 @@
 			<scope>test</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>org.apache.groovy</groupId>
+			<artifactId>groovy</artifactId>
+			<version>4.0.23</version>
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
 
 	<build>
