@@ -3,9 +3,8 @@ package br.com.proenix.toolsChallenge.unit.util.deserializer;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-import java.math.BigDecimal;
-
 import br.com.proenix.toolsChallenge.util.deserializer.MoneyDeserializer;
+import java.math.BigDecimal;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

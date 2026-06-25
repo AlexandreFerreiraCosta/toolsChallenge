@@ -1,13 +1,13 @@
 package br.com.proenix.toolsChallenge.integration;
 
-import br.com.proenix.toolsChallenge.integration.configuration.BaseIntegrationTest;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+
+import br.com.proenix.toolsChallenge.integration.configuration.BaseIntegrationTest;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 public class TransactionControllerTest extends BaseIntegrationTest {
 
@@ -31,14 +31,14 @@ public class TransactionControllerTest extends BaseIntegrationTest {
                           }
                         }
                         """.formatted(java.time.LocalDateTime.now().plusHours(1)
-                                .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"))))
+                        .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"))))
                 .when()
                 .post("/api/v1/transaction")
                 .then()
                 .statusCode(201)
-                .body("description.authorizationCode", notNullValue())
-                .body("description.nsu", notNullValue())
-                .body("description.transactionStatus", equalTo("AUTHORIZED"));
+                .body("description.authorizationCode",notNullValue())
+                .body("description.nsu",notNullValue())
+                .body("description.transactionStatus",equalTo("AUTHORIZED"));
     }
 
     @Test
@@ -66,8 +66,8 @@ public class TransactionControllerTest extends BaseIntegrationTest {
                 .post("/api/v1/transaction")
                 .then()
                 .statusCode(201)
-                .body("description.authorizationCode", nullValue())
-                .body("description.nsu", nullValue())
-                .body("description.transactionStatus", equalTo("DENIED"));
+                .body("description.authorizationCode",nullValue())
+                .body("description.nsu",nullValue())
+                .body("description.transactionStatus",equalTo("DENIED"));
     }
 }

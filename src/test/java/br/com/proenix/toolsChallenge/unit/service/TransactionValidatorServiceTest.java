@@ -5,10 +5,9 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import br.com.proenix.toolsChallenge.entity.Description;
 import br.com.proenix.toolsChallenge.entity.Transaction;
 import br.com.proenix.toolsChallenge.enums.ETransactionStatus;
+import br.com.proenix.toolsChallenge.service.TransactionValidatorService;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-
-import br.com.proenix.toolsChallenge.service.TransactionValidatorService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

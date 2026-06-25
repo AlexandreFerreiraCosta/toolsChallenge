@@ -10,8 +10,6 @@ import br.com.proenix.toolsChallenge.exception.ApiErrorResponse;
 import br.com.proenix.toolsChallenge.exception.FailureBadRequestException;
 import br.com.proenix.toolsChallenge.exception.GlobalExceptionHandler;
 import jakarta.servlet.http.HttpServletRequest;
-
-import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
