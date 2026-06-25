@@ -98,13 +98,13 @@ public class GlobalExceptionHandler {
             HttpServletRequest request) {
         ApiErrorResponse apiErrorResponse = new ApiErrorResponse();
         apiErrorResponse.setDateError(LocalDateTime.now());
-        apiErrorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-        apiErrorResponse.setError(HttpStatus.BAD_REQUEST.getReasonPhrase());
+        apiErrorResponse.setStatus(HttpStatus.NOT_FOUND.value());
+        apiErrorResponse.setError(HttpStatus.NOT_FOUND.getReasonPhrase());
         apiErrorResponse
                 .setMessage((messageSource.getMessage(REQUESTED_PATH_WAS_NOT_FOUND_ON_THE_SERVER,null,LocaleContextHolder.getLocale())));
         apiErrorResponse.setPath(request.getRequestURI());
 
-        return new ResponseEntity<>(apiErrorResponse, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(apiErrorResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)

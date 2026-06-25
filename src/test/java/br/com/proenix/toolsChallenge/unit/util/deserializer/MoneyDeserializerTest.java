@@ -1,6 +1,7 @@
 package br.com.proenix.toolsChallenge.unit.util.deserializer;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 import br.com.proenix.toolsChallenge.util.deserializer.MoneyDeserializer;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import tools.jackson.core.JsonParser;
+import tools.jackson.databind.exc.InvalidFormatException;
 
 @ExtendWith(MockitoExtension.class)
 class MoneyDeserializerTest {
@@ -49,5 +51,15 @@ class MoneyDeserializerTest {
         BigDecimal result = deserializer.deserialize(jsonParser, null);
 
         assertThat(result).isEqualByComparingTo(new BigDecimal("123.45"));
+    }
+
+    @Test
+    @DisplayName("should throw InvalidFormatException for invalid monetary value")
+    void shouldThrowInvalidFormatExceptionForInvalidMonetaryValue() {
+        when(jsonParser.getString()).thenReturn("abc");
+
+        assertThatThrownBy(() -> deserializer.deserialize(jsonParser, null))
+                .isInstanceOf(InvalidFormatException.class)
+                .hasMessageContaining("Valor monetário inválido: 'abc'");
     }
 }

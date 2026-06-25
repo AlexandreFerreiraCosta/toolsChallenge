@@ -29,9 +29,9 @@ public class TransactionSpecification {
                 : criteriaBuilder.equal(root.get("description").get("transactionStatus"),transactionStatus);
     }
 
-    public static Specification<Transaction> hasPaymentType(String transactionStatus) {
-        return (root,query,criteriaBuilder) -> (transactionStatus == null)
+    public static Specification<Transaction> hasPaymentType(String paymentType) {
+        return (root,query,criteriaBuilder) -> (paymentType == null)
                 ? null
-                : criteriaBuilder.equal(root.get("paymentMethod").get("paymentType"),transactionStatus);
+                : criteriaBuilder.equal(root.get("paymentMethod").get("paymentType"),paymentType);
     }
 }
